@@ -1,0 +1,27 @@
+.inline-code {
+  @apply bg-gray-200 px-1.5 py-0.5 rounded border border-gray-300 dark:bg-black dark:text-white;
+  font-family: ui-monospace,'SF Mono', SFMono-Regular, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+a.link-external {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+a.link-external::after {
+  content: "";
+  width: 1em;
+  height: 1em;
+  opacity: 0.7;
+  flex: none;
+
+  background-color: currentColor;
+
+  -webkit-mask: url("/images/link-external.svg") no-repeat center;
+  mask: url("/images/link-external.svg") no-repeat center;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
