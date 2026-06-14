@@ -7,8 +7,12 @@ export const headerData = {
       href: getPermalink('/'),
     },
     {
-      text: 'ทดลองพิมพ์',
+      text: 'ทดลอง',
       href: getPermalink('/try'),
+    },
+    {
+      text: 'ฝึกพิมพ์',
+      href: 'https://learn.manoonchai.com',
     },
     {
       text: 'บทความ',
