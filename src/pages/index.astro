@@ -31,14 +31,14 @@ const metadata = {
         class: 'whitespace-nowrap',
       },
       {
-        text: '<span class=\"whitespace-nowrap\">ทดลองพิมพ์</span>',
+        text: '<span class=\"whitespace-nowrap\">ทดลอง</span>',
         href: '/try',
         icon: 'tabler:keyboard',
         class: 'whitespace-nowrap',
       },
-        {
+      {
         text: '<span class=\"whitespace-nowrap\">ฝึกพิมพ์</span>',
-        href: 'https://manoontype.web.app',
+        href: 'https://learn.manoonchai.com',
         target: '_blank',
         icon: 'tabler:keyboard',
         class: 'whitespace-nowrap',
@@ -70,7 +70,7 @@ const metadata = {
       >
     </Fragment>
     <Image slot="image" src={img_manoochaiLayout} alt="Manoonchai Layout" />
-  </Hero2>
+  </Hero>
   <!-- Features Widget *************** -->
   <Features2
     id="features"
@@ -133,13 +133,14 @@ const metadata = {
 <script>
   const el = document.getElementById('type-title');
   if (el) {
-    const text = el.textContent;
-    const h1 = el.closest('h1');
-    el.textContent = '';
+    const target = el;
+    const text = target.textContent ?? '';
+    const h1 = target.closest('h1');
+    target.textContent = '';
     let z = 0;
     function type() {
       z++;
-      el.textContent = text.slice(0, z);
+      target.textContent = text.slice(0, z);
       if (z < text.length) {
         setTimeout(type, 90);
       }
