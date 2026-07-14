@@ -2,8 +2,8 @@ import { layoutsData } from "../scripts/sydiime-layouts.js";
 
 const SyDiIME = (() => {
 	let isActive = false;
-	let isImPage = false;
-	let isOSLayoutThai = false;
+	let isOSLayoutThai = true;
+	let isAutoSwitchEnabled = false;
 	const seg = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 	const defaultSinput = {
 		currentLayout: "thai-mnc",
@@ -46,8 +46,27 @@ const SyDiIME = (() => {
 	function init() {
 		if (isActive) return;
 		isActive = true;
-		isImPage = location.pathname === '/im';
-		isOSLayoutThai = !isImPage;
+		
+		const autoSwitchEl = document.getElementById('sydiime-auto-switch');
+		if (autoSwitchEl) {
+			isAutoSwitchEnabled = localStorage.getItem('sydiime-autoSwitch') === 'true';
+			autoSwitchEl.checked = isAutoSwitchEnabled;
+			isOSLayoutThai = !isAutoSwitchEnabled;
+			
+			on(autoSwitchEl, 'change', (event) => {
+				isAutoSwitchEnabled = event.target.checked;
+				localStorage.setItem('sydiime-autoSwitch', isAutoSwitchEnabled.toString());
+				isOSLayoutThai = !isAutoSwitchEnabled;
+				changeKbdvtLayout();
+				toggleKeyColumns();
+				resetKbd();
+				boxTextFocus();
+			});
+		} else {
+			isAutoSwitchEnabled = false;
+			isOSLayoutThai = true;
+		}
+
 		boxText = document.getElementById('sydiime-textArea');
 		kbdvtCont = document.getElementById('sydiime-kbdvtCont');
 		fltCont = document.getElementById('sydiime-fltCont');
@@ -197,7 +216,7 @@ const SyDiIME = (() => {
 
 	function handleEvent(event) {
 		// console.debug(`${event.type}: ${event.inputType}: ${event.data} ${flags.isGbd}`);
-		const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+		const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 		if (activeLayout == "default") {
 			switch (event.type) {
 				case "compositionstart":
@@ -249,16 +268,18 @@ const SyDiIME = (() => {
 			return;
 		}
 
-		if (isImPage) {
+		if (isAutoSwitchEnabled) {
 			const isThai = isThaiKeystroke(event);
 			if (isThai !== null && isThai !== isOSLayoutThai) {
 				isOSLayoutThai = isThai;
 				changeKbdvtLayout();
 				toggleKeyColumns();
 			}
+		} else {
+			isOSLayoutThai = true;
 		}
 
-		const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+		const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 
 		if (event.code === 'Tab') {
 			if (!flags.isGbd) {
@@ -316,7 +337,7 @@ const SyDiIME = (() => {
 	};
 
 	function typing(key) {
-		const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+		const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 		if (layoutsData[activeLayout]['main_keys'][key]) {
 			let output = sentOutput(key, layoutsData[activeLayout]);
 			modifyText.add(checkOrdering(output));
@@ -356,7 +377,7 @@ const SyDiIME = (() => {
 		const keyDiv = keyCache[key]?.div;
 		activeSymbol(event, 1);
 		
-		const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+		const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 		if (activeLayout == "default") {
 			return
 		}
@@ -578,7 +599,7 @@ const SyDiIME = (() => {
 	}
 
 	function changeKbdvtLayout() {
-		const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+		const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 		const layout = layoutsData[activeLayout].main_keys;
 		for (const keyId in layout) {
 			const k = keyCache[keyId];
@@ -613,7 +634,7 @@ const SyDiIME = (() => {
 			modifState.altPressed ||
 			modifState.altToggle;
 
-		const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+		const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 		const layout = layoutsData[activeLayout].main_keys;
 		for (const keyId in layout) {
 			const k = keyCache[keyId];
@@ -682,7 +703,7 @@ const SyDiIME = (() => {
 		if (speciKeys.includes(key)) {
 			handleKeyPress(key);
 		} else {
-			const activeLayout = (isImPage && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
+			const activeLayout = (isAutoSwitchEnabled && !isOSLayoutThai) ? 'default' : sinput.currentLayout;
 			if (layoutsData[activeLayout]['main_keys'][key]) {
 				let output = sentOutput(key, layoutsData[activeLayout]);
 				modifyText.add(checkOrdering(output));
