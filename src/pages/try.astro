@@ -303,7 +303,7 @@ const iconBtns = {
 
       <!-- Status Bar / Counters -->
       <div class="absolute left-4 bottom-4 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-slate-900/80 backdrop-blur px-2.5 py-1.5 rounded-md border border-gray-200 dark:border-gray-800 z-10">
-        <span id="sydiime-char-count">0</span> ตัวอักษร | <span id="sydiime-word-count">0</span> คำ
+        <span id="sydiime-char-count">0</span> ตัวอักษร
       </div>
     </div>
   </div>
@@ -366,7 +366,6 @@ const iconBtns = {
     const btnFontInc = document.getElementById('sydiime-font-inc');
     const btnFontDec = document.getElementById('sydiime-font-dec');
     const charCountEl = document.getElementById('sydiime-char-count');
-    const wordCountEl = document.getElementById('sydiime-word-count');
     const copyTextEl = document.getElementById('sydiime-copy-text');
 
     if (textarea) {
@@ -399,10 +398,8 @@ const iconBtns = {
       const updateCounters = () => {
         const text = textarea.value;
         const charCount = text.length;
-        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
         
         if (charCountEl) charCountEl.textContent = charCount.toString();
-        if (wordCountEl) wordCountEl.textContent = words.toString();
       };
 
       textarea.addEventListener('input', updateCounters);
