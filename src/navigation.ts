@@ -11,6 +11,10 @@ export const headerData = {
       href: getPermalink('/try'),
     },
     {
+      text: 'พิมพ์ออนไลน์',
+      href: getPermalink('/im'),
+    },
+    {
       text: 'ฝึกพิมพ์',
       href: 'https://learn.manoonchai.com',
     },

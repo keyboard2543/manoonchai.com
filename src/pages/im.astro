@@ -1,0 +1,333 @@
+---
+// Although this file imports `sydiime`,
+// many parts of this page depend on SyDiIME but are not
+// considered part of the SyDiIME codebase.
+//
+// They are independent components of this project and
+// are distributed under the MIT License.
+import Layout from '~/layouts/PageLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { layoutsData } from '../scripts/sydiime-layouts.js';
+
+const metadata = {
+  title: 'พิมพ์ออนไลน์ (Manoonchai Online IME)',
+};
+
+const pc = [
+  'Backquote',
+  'Digit1',
+  'Digit2',
+  'Digit3',
+  'Digit4',
+  'Digit5',
+  'Digit6',
+  'Digit7',
+  'Digit8',
+  'Digit9',
+  'Digit0',
+  'Minus',
+  'Equal',
+  'Backspace',
+  'Tab',
+  'KeyQ',
+  'KeyW',
+  'KeyE',
+  'KeyR',
+  'KeyT',
+  'KeyY',
+  'KeyU',
+  'KeyI',
+  'KeyO',
+  'KeyP',
+  'BracketLeft',
+  'BracketRight',
+  'Backslash',
+  'CapsLock',
+  'KeyA',
+  'KeyS',
+  'KeyD',
+  'KeyF',
+  'KeyG',
+  'KeyH',
+  'KeyJ',
+  'KeyK',
+  'KeyL',
+  'Semicolon',
+  'Quote',
+  'Enter',
+  'ShiftLeft',
+  'KeyZ',
+  'KeyX',
+  'KeyC',
+  'KeyV',
+  'KeyB',
+  'KeyN',
+  'KeyM',
+  'Comma',
+  'Period',
+  'Slash',
+  'ShiftRight',
+  'btnF1',
+  'seltrLays',
+  'Space',
+  'AltRight',
+  'btnHide',
+];
+
+const iconKeys = {
+  Tab: 'tabler:arrow-bar-to-right',
+  Enter: 'tabler:corner-down-left',
+  Backspace: 'tabler:backspace',
+  ShiftLeft: 'tabler:arrow-big-up',
+  ShiftRight: 'tabler:arrow-big-up',
+  CapsLock: 'tabler:arrow-big-up-line',
+  AltRight: 'tabler:trending-up-2',
+};
+
+const iconBtns = {
+  btnF1: 'tabler:world',
+  btnHide: 'tabler:keyboard-show',
+};
+---
+
+<style is:global>
+  :root {
+    --sydiime-font-family:
+      Sarabun, 'Hiragino Kaku Gothic Pro', 'Hiragino Sans', '游ゴシック',
+      'Yu Gothic', 'メイリオ', 'Meiryo', 'ＭＳ Ｐゴシック', 'MS PGothic',
+      'Noto Sans JP', 'Noto Sans CJK JP', 'IPAMonaPGothic',
+      'IPA โมナー Pゴシック', 'Chocolate Classical Sans', SF-Pro, Thonburi,
+      Garuda, Tahoma, sans-serif;
+  }
+  textarea {
+    font-family: var(--sydiime-font-family);
+  }
+  #sydiime-fltCont {
+    @apply fixed right-0 bottom-0 p-2 bg-gray-200 dark:bg-gray-900 rounded-lg z-20;
+    box-shadow:
+      rgba(66, 68, 90, 0.5) 0px 0px 1px 0px,
+      rgba(0, 0, 0, 0.12) 0px 0px 2px,
+      rgba(0, 0, 0, 0.14) 0px 4px 8px,
+      rgba(255, 255, 255, 0.5) 0 0 0 1px inset,
+      rgba(200, 200, 200, 0.5) 0 -1px 0 0 inset;
+  }
+  #sydiime-kbdvtCont {
+    @apply mx-auto max-w-[860px] w-full z-20 fixed bottom-0 tall-sm:bottom-4 left-0 right-0;
+    touch-action: manipulation;
+    transition:
+      transform 0.1s ease-out,
+      max-width 0.1s ease-out,
+      bottom 0.1s ease-out,
+      right 0.1s ease-out,
+      opacity 0.1s ease-out;
+    &::before {
+      content: ' ';
+      @apply z-[-1] absolute inset-0 bg-gray-200 dark:bg-gray-900 rounded-[8px];
+      /* @apply  md:bg-gray-200/50 md:backdrop-blur-md; หนักเครื่องเกินไป */
+      box-shadow:
+        rgba(66, 68, 90, 0.5) 0px 0px 1px 0px,
+        rgba(0, 0, 0, 0.12) 0px 0px 2px,
+        rgba(0, 0, 0, 0.14) 0px 4px 8px,
+        rgba(255, 255, 255, 0.5) 0 0 0 1px inset,
+        rgba(200, 200, 200, 0.5) 0 -1px 0 0 inset;
+    }
+  }
+  #sydiime-kbd {
+    @apply grid [grid-template-columns:repeat(58,1fr)] [grid-template-rows:repeat(10,1fr)] justify-center;
+    @apply select-none mx-auto mb-0 p-[5px] sm:p-[8px] relative max-h-[50vh] h-[300px] gap-[3px] sm:gap-[8px];
+  }
+
+  .sydiime-key {
+    @apply col-span-4 row-span-2 p-0 text-center border-0 cursor-pointer whitespace-nowrap flex justify-center items-center relative;
+    @apply text-[26px] rounded-[6px];
+    @apply bg-white dark:bg-slate-800 border-b border-gray-400 dark:border-gray-800;
+    font-family: var(--sydiime-font-family);
+    touch-action: manipulation;
+
+    &.sydiime-active {
+      @apply !bg-gray-300 dark:!bg-gray-700;
+    }
+  }
+
+  .sydiime-text {
+    @apply text-xl 2xl:text-base
+         whitespace-nowrap
+         absolute top-0
+         p-0
+         overflow-visible
+         text-center
+         min-w-[20%]
+         h-[120%]
+         mx-auto;
+
+    &.sydiime-active {
+      @apply text-current dark:text-white;
+    }
+
+    &.sydiime-mute {
+      @apply text-neutral-300 dark:text-neutral-600;
+    }
+
+    &.sydiime-mute-s {
+      @apply text-gray-500 dark:text-gray-400;
+    }
+  }
+
+  .sydiime-t0 {
+    right: 10%;
+    top: 40%;
+  }
+
+  .sydiime-t1 {
+    left: 20%;
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  .sydiime-t2 {
+    right: 5%;
+  }
+
+  .sydiime-t3 {
+    right: 30%;
+  }
+  .sydiime-t2,
+  .sydiime-t3 {
+    @apply text-neutral-300 dark:text-neutral-600;
+  }
+
+  /* Special keys */
+  #sydiime-k-ShiftLeft,
+  #sydiime-k-ShiftRight,
+  #sydiime-k-Enter,
+  #sydiime-k-Backspace,
+  #sydiime-k-Tab,
+  #sydiime-k-AltRight,
+  #sydiime-k-CapsLock,
+  #sydiime-btnF1,
+  #sydiime-btnHide {
+    @apply bg-gray-300 dark:bg-gray-600;
+    &.sydiime-active {
+      @apply !bg-gray-400 dark:!bg-gray-700;
+    }
+  }
+
+  #sydiime-k-Tab {
+    @apply col-span-6;
+  }
+
+  #sydiime-k-CapsLock {
+    @apply col-span-7;
+  }
+
+  #sydiime-k-KeyF,
+  #sydiime-k-KeyJ {
+    @apply border-blue-500;
+  }
+
+  #sydiime-k-ShiftLeft {
+    @apply col-span-9;
+  }
+
+  #sydiime-k-ShiftRight {
+    @apply col-span-9;
+  }
+
+  #sydiime-k-Enter {
+    @apply col-span-7;
+  }
+
+  #sydiime-k-Backspace {
+    @apply col-span-6;
+  }
+
+  #sydiime-seltrLays {
+    @apply bg-gray-300 dark:bg-gray-600;
+    @apply text-xl 2xl:text-base pl-2;
+    text-align: start;
+    grid-column-start: span 13;
+    grid-column-end: span 13;
+  }
+
+  #sydiime-k-Space {
+    grid-column-start: 18;
+    grid-column-end: span 20;
+  }
+
+  #sydiime-btnHide {
+    grid-column-start: 55;
+  }
+</style>
+<Layout metadata={metadata}>
+  <div class="max-w-7xl mx-auto px-4">
+    <div id="sydiime-textEditor">
+      <textarea
+        id="sydiime-textArea"
+        class="w-full h-full min-h-screen text-xl px-1.5 py-0.5 focus:outline-none focus:none rounded-lg border border-gray-300 bg-orange-50 dark:bg-black dark:text-white"
+        aria-label="text area"
+        inputmode="none"
+        placeholder="พิมพ์ข้อความภาษาไทยตรงนี้ด้วยคีย์บอร์ดปกติของคุณได้เลย! ระบบจะแปลงจากแป้นเกดมณี (หรือปัตตะโชติ) เป็นแป้นมนูญชัยให้โดยอัตโนมัติ (หากคีย์บอร์ดเป็นภาษาอังกฤษจะพิมพ์ภาษาอังกฤษได้ตามปกติ)"
+      ></textarea>
+    </div>
+  </div>
+
+  <div id="sydiime-kbdvtCont" class="">
+    <div id="sydiime-kbd" class="sydiime-kbd">
+      {
+        pc.map(key =>
+          key === 'seltrLays' ? (
+            <select class="sydiime-key" id="sydiime-seltrLays">
+              <option value="default">System</option>
+              <option value="thai-mnc">มนูญชัย</option>
+              <option value="thai-mnc-jis">มนูญชัย JIS</option>
+              <option value="thai-tis">มอก. 820-2538</option>
+              <option value="thai-ptj">ปัตตะโชติ</option>
+            </select>
+          ) : iconBtns[key] ? (
+            <div class="sydiime-key" id={`sydiime-${key}`}>
+              <Icon name={iconBtns[key]} />
+            </div>
+          ) : iconKeys[key] ? (
+            <div class="sydiime-key" id={`sydiime-k-${key}`}>
+              <Icon name={iconKeys[key]} />
+            </div>
+          ) : (
+            <div class="sydiime-key" id={`sydiime-k-${key}`}>
+              <div class="sydiime-text sydiime-t2">
+                {layoutsData['thai-mnc'].main_keys[key]?.[2]}
+              </div>
+              <div class="sydiime-text sydiime-t3">
+                {layoutsData['thai-mnc'].main_keys[key]?.[3]}
+              </div>
+              <div class="sydiime-text sydiime-t0">
+                {layoutsData['thai-mnc'].main_keys[key]?.[0]}
+              </div>
+              <div class="sydiime-text sydiime-t1">
+                {layoutsData['thai-mnc'].main_keys[key]?.[1]}
+              </div>
+            </div>
+          ),
+        )
+      }
+    </div>
+  </div>
+  <div id="sydiime-fltCont" class="hidden">
+    <button id="sydiime-btnShow" class="text-lg p-1"
+      ><Icon name="tabler:keyboard-hide" class="w-6 h-6 inline-block" /></button
+    >
+  </div>
+  <Fragment slot="footer"></Fragment>
+</Layout>
+
+<script>
+  import SyDiIME from '../scripts/sydiime.js';
+  document.addEventListener('astro:page-load', () => {
+    if (location.pathname === '/im') {
+      SyDiIME.init();
+    }
+  });
+  document.addEventListener('astro:before-swap', () => {
+    if (location.pathname === '/im') {
+      SyDiIME.destroy();
+    }
+  });
+</script>
